@@ -15,7 +15,7 @@ PWM_CHANNEL_PERIOD_FILE = 'period'  # The time in nanoseconds of the entire PWM 
 # Write normal or inversed to control whether the asserted portion of the PWM signal is a logical high vs. a local low (not supported)
 #PWM_CHANNEL_POLARITY_FILE = 'polarity'
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 class OnionPwm:
     def __init__(self, channel, chip):    # Accepts a pwm channel-number and a pwm chip-number as integer
@@ -42,7 +42,8 @@ class OnionPwm:
         return maxChannels
 
     def setFrequency(self, frequency):  # Frequency in Hz
-        channelPeriod = (1 / frequency) * 1e+9  # Period in nanoseconds (1000000000ns = 1s)
+        channelPeriod = int((1 / frequency) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
+        # Rounding is necessary since point numbers are not supported
         self._exportChannel()
         try:
             with open(self.periodFile, 'w') as fd:
@@ -50,14 +51,14 @@ class OnionPwm:
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
 
-    def getFrequency(self):
+    def getFrequency(self): # Result may slightly vary from the value set with setFrequency() due to rounding
         self._exportChannel()
         try:
             with open(self.periodFile, 'r') as fd:
                 channelPeriod = int(fd.read())
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
-        frequency = 1 / (channelPeriod / 1e+9)  # Frequency in Hz
+        frequency = int(1 / (channelPeriod / 1e+9))  # Frequency in Hz
         return frequency
 
     def setDutyCycle(self, dutyCycle):  # Value between 0 and 1 as float (0.75)
@@ -65,7 +66,7 @@ class OnionPwm:
         try:
             with open(self.periodFile, 'r') as fd:
                 channelPeriod = int(fd.read())  # Read period first
-            channelCycle = channelPeriod * dutyCycle    # Duty cyle in nanoseconds
+            channelCycle = int(channelPeriod * dutyCycle)    # Duty cyle in nanoseconds, rounding is necessary
             with open(self.cycleFile, 'w') as fd:
                 fd.write(str(channelCycle))
         finally:
@@ -80,7 +81,7 @@ class OnionPwm:
                 channelCycle = int(fd.read())
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
-        dutyCyle = channelCycle / channelPeriod
+        dutyCycle = channelCycle / channelPeriod    # Result may slight vary from the value set with setDutyCycle() due to rounding
         return dutyCycle
 
     def enable(self):
