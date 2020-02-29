@@ -19,10 +19,10 @@ __version__ = '0.1'
 
 class OnionPwm:
     def __init__(self, channel, chip):    # Accepts a pwm channel-number and a pwm chip-number as integer
-            self.path =  PWM_PATH % chip
-            if self.getMaxChannels > channel:
+            self.path = PWM_PATH % chip
+            if self.getMaxChannels() > channel:
                 raise ValueError('Channel unknown') # Channel exceeds max. channel number
-        	self.channelNumber = channel   # Necessary for export/unexport
+            self.channelNumber = channel   # Necessary for export/unexport
             self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
             self.periodFile = self.channelPath + '/' + PWM_CHANNEL_PERIOD_FILE
             self.cycleFile = self.channelPath + '/' + PWM_CHANNEL_DUTY_CYCLE_FILE
@@ -71,7 +71,7 @@ class OnionPwm:
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
 
-    def getDutyCycle(self);
+    def getDutyCycle(self):
         self._exportChannel()
         try:
             with open(self.periodFile, 'r') as fd:
