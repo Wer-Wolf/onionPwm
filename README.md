@@ -50,6 +50,8 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * Values above 100 or under 0 for ```dutyCycle``` will raise ```ValueError('dutyCycle exceeds max. of 100 or min. of 0(%)')```
 
+* When no frequency is set, ```setDutyCycle``` and ```getDutyCycle()``` will always set/report 0
+
 * When the corresponding PWM channel is already exported, you will get ```OSError: [Errno 16] Resource busy```. Call ```channel._unexportChannel()``` and try againc
 
 ```channel.getDutyCycle()``` --> duty cycle in percend
@@ -64,9 +66,13 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * When the corresponding PWM channel is already exported, you will get ```OSError: [Errno 16] Resource busy```. Call ```channel._unexportChannel()``` and try againc
 
+* Please do ```setFrequency()``` before enabling a PWM channel, else you will get ```OSError: [Errno 22] Invalid argument```
+
 ```channel.disable()```
 
 * When the corresponding PWM channel is already exported, you will get ```OSError: [Errno 16] Resource busy```. Call ```channel._unexportChannel()``` and try again
+
+* Please do ```enable()``` before disabling a PWM channel, else you will get ```OSError: [Errno 22] Invalid argument```
 
 ## **Supports:**
 
