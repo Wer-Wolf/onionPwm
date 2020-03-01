@@ -64,12 +64,14 @@ class OnionPwm:
         frequency = 1 / (channelPeriod / 1e+9)  # Frequency in Hz
         return frequency
 
-    def setDutyCycle(self, dutyCycle):  # Value between 0 and 1 as float (0.75)
+    def setDutyCycle(self, dutyCycle):  # Value between 0 and 100 as float (75.5 -> 75.5 %)
+        if dutyCycle > 100:
+            raise ValueError('Value exceeds max. of 100 (%)')
         self._exportChannel()
         try:
             with open(self.periodFile, 'r') as fd:
                 channelPeriod = int(fd.read())  # Read period first
-            channelCycle = int(channelPeriod * dutyCycle)    # Duty cyle in nanoseconds, rounding is necessary
+            channelCycle = int(channelPeriod * (dutyCycle / 100)    # Duty cyle in nanoseconds, rounding is necessary
             with open(self.cycleFile, 'w') as fd:
                 fd.write(str(channelCycle))
         finally:
