@@ -40,7 +40,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel.getFrequency()``` --> frequency in Hz
 
-*** The result may slightly vary from the value set with setFrequency() due to rounding ***
+***The result may slightly vary from the value set with setFrequency() due to rounding***
 
 * When the corresponding PWM channel is already exported, you will get ```OSError: [Errno 16] Resource busy```. Call ```channel._unexportChannel()``` and try again
 
@@ -54,7 +54,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel.getDutyCycle()``` --> duty cycle in percend
 
-*** The result may slightly vary from the value set with setDutyCycle() due to rounding ***
+***The result may slightly vary from the value set with setDutyCycle() due to rounding***
 
 * When the corresponding PWM channel is already exported, you will get ```OSError: [Errno 16] Resource busy```. Call ```channel._unexportChannel()``` and try again
 
