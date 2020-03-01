@@ -61,7 +61,7 @@ class OnionPwm:
                 channelPeriod = int(fd.read())
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
-        frequency = int(1 / (channelPeriod / 1e+9))  # Frequency in Hz
+        frequency = 1 / (channelPeriod / 1e+9)  # Frequency in Hz
         return frequency
 
     def setDutyCycle(self, dutyCycle):  # Value between 0 and 1 as float (0.75)
