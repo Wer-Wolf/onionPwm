@@ -49,8 +49,16 @@ class OnionPwm:
         # Rounding is necessary since point numbers are not supported
         self._exportChannel()
         try:
+            with open(self.cycleFile, 'r+') as fd:
+                currentCycle = int(fd.read())
+                fd.write('0')   # To avoid OsError later due duty_cycle > period
+            with open(self.periodFile, 'r') as fd:
+                currentPeriod = int(fd.read())
+            newCycle = int((channelPeriod / currentPeriod) * currentCycle)  # Necessary to adjust duty cycle to new period
             with open(self.periodFile, 'w') as fd:
                 fd.write(str(channelPeriod))
+            with open(self.cycleFile, 'w') as fd:
+                fd.write(str(newCycle))
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
 
@@ -65,8 +73,8 @@ class OnionPwm:
         return frequency
 
     def setDutyCycle(self, dutyCycle):  # Value between 0 and 100 as float (75.5 -> 75.5 %)
-        if dutyCycle > 100:
-            raise ValueError('Value exceeds max. of 100 (%)')
+        if dutyCycle > 100 or dutyCycle < 0:
+            raise ValueError('Value exceeds max. of 100 or min. of 0(%)')
         self._exportChannel()
         try:
             with open(self.periodFile, 'r') as fd:
