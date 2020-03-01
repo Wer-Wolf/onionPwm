@@ -45,6 +45,8 @@ class OnionPwm:
         return maxChannels
 
     def setFrequency(self, frequency):  # Frequency in Hz
+        if frequency < 0:
+            raise ValueError('frequency needs to be positive')
         channelPeriod = int((1 / frequency) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
         # Rounding is necessary since point numbers are not supported
         self._exportChannel()
