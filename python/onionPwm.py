@@ -86,7 +86,7 @@ class OnionPwm:
 
     def setDutyCycle(self, dutyCycle):  # Value between 0 and 100 as float (75.5 -> 75.5 %)
         if dutyCycle > 100 or dutyCycle < 0:
-            raise ValueError('Value exceeds max. of 100 or min. of 0(%)')
+            raise ValueError('dutyCycle exceeds max. of 100 or min. of 0(%)')
         self._exportChannel()
         try:
             with open(self.periodFile, 'r') as fd:
