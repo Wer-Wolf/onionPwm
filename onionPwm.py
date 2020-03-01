@@ -23,7 +23,7 @@ __version__ = '0.3'
 class OnionPwm:
     def __init__(self, channel, chip):    # Accepts a pwm channel-number and a pwm chip-number as integer
             self.path = PWM_PATH % chip
-            if self.getMaxChannels() < channel:
+            if (self.getMaxChannels() - 1) < channel:
                 raise ValueError('Channel unknown') # Channel exceeds max. channel number
             self.channelNumber = channel   # Necessary for export/unexport
             self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
