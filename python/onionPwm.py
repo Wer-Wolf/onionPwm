@@ -81,7 +81,10 @@ class OnionPwm:
                 channelPeriod = int(fd.read())
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
-        frequency = 1 / (channelPeriod / 1e+9)  # Frequency in Hz
+        if channelPeriod != 0:  # Period set
+            frequency = 1 / (channelPeriod / 1e+9)  # Frequency in Hz
+        else:
+            frequency = 0
         return frequency
 
     def setDutyCycle(self, dutyCycle):  # Value between 0 and 100 as float (75.5 -> 75.5 %)
@@ -91,9 +94,12 @@ class OnionPwm:
         try:
             with open(self.periodFile, 'r') as fd:
                 channelPeriod = int(fd.read())  # Read period first
-            channelCycle = int(channelPeriod * (dutyCycle / 100))    # Duty cyle in nanoseconds, rounding is necessary
-            with open(self.cycleFile, 'w') as fd:
-                fd.write(str(channelCycle))
+            if channelPeriod != 0:   # Period set
+                channelCycle = int(channelPeriod * (dutyCycle / 100))    # Duty cyle in nanoseconds, rounding is necessary
+                with open(self.cycleFile, 'w') as fd:
+                    fd.write(str(channelCycle))
+            # Else the new duty cycle whould equal 0
+
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
 
@@ -106,7 +112,10 @@ class OnionPwm:
                 channelCycle = int(fd.read())
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
-        dutyCycle = (channelCycle / channelPeriod) * 100    # Result may slight vary from the value set with setDutyCycle() due to rounding
+        if channelPeriod != 0:  # Period set
+            dutyCycle = (channelCycle / channelPeriod) * 100    # Result may slight vary from the value set with setDutyCycle() due to rounding
+        else:
+            dutyCycle = 0
         return dutyCycle
 
     def enable(self):
