@@ -1,3 +1,5 @@
+import os.path
+
 # Path definitions
 PWM_BASE_PATH = '/sys/class/pwm'
 PWM_PATH = PWM_BASE_PATH + '/pwmchip%d' # Add number of pwm chip (pwmchip0)
@@ -21,7 +23,9 @@ __version__ = '0.3'
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
 
 class OnionPwm:
-    def __init__(self, channel, chip):    # Accepts a pwm channel-number and a pwm chip-number as integer
+    def __init__(self, channel, chip = 0):    # Accepts a pwm channel-number and a pwm chip-number as integer
+            if not os.path.isdir(PWM_PATH % chip):
+                raise ValueError('Chip unknown')
             self.path = PWM_PATH % chip
             if (self.getMaxChannels() - 1) < channel:
                 raise ValueError('Channel unknown') # Channel exceeds max. channel number
