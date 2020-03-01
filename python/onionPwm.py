@@ -53,20 +53,24 @@ class OnionPwm:
             raise ValueError('frequency needs to be greater than 0')
         channelPeriod = int((1 / frequency) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
         # Rounding is necessary since point numbers are not supported
-        if channelPeriod is 0:
+        if channelPeriod == 0:
             raise ValueError('Frequency too low')
         self._exportChannel()
         try:
-            with open(self.cycleFile, 'r+') as fd:
-                currentCycle = int(fd.read())
-                fd.write('0')   # To avoid OsError later due duty_cycle > period
             with open(self.periodFile, 'r') as fd:
                 currentPeriod = int(fd.read())
-            newCycle = int((channelPeriod / currentPeriod) * currentCycle)  # Necessary to adjust duty cycle to new period
-            with open(self.periodFile, 'w') as fd:
-                fd.write(str(channelPeriod))
-            with open(self.cycleFile, 'w') as fd:
-                fd.write(str(newCycle))
+            if currentPeriod != 0:  # Not first access after reset
+                with open(self.cycleFile, 'r+') as fd:
+                    currentCycle = int(fd.read())
+                    fd.write('0')   # To avoid OsError later due duty_cycle > period
+                newCycle = int((channelPeriod / currentPeriod) * currentCycle)  # Necessary to adjust duty cycle to new period
+                with open(self.periodFile, 'w') as fd:
+                    fd.write(str(channelPeriod))
+                with open(self.cycleFile, 'w') as fd:
+                    fd.write(str(newCycle))
+            else:   # Do not adjust duty_cycle
+                with open(self.periodFile, 'w') as fd:
+                    fd.write(str(channelPeriod))
         finally:
             self._unexportChannel() # Unexports channel even if an exception occurs
 
