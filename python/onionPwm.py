@@ -24,6 +24,18 @@ __maintainer__ = 'Wer-Wolf'
 # Before using this library, make sure to enable the corresponding PWM pins
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
 
+def forceRelease(channel, chip = 0): # Accepts a pwm channel-number and a pwm chip-number as integer
+    path = PWM_PATH % chip
+    if not os.path.isdir(path):
+        raise ValueError('Chip unknown')
+    with open(path + '/' + PWM_CHANNELS_FILE, 'r') as fd:
+        maxChannels = int(fd.read())
+    if (maxChannels() - 1) < channel:
+        raise ValueError('Channel unknown') # Channel exceeds max. channel number
+    with open(path + '/' + PWM_UNEXPORT_FILE, 'w') as fd:
+        fd.write(str(channel))
+    
+
 class OnionPwm:
     def __init__(self, channel, chip = 0):    # Accepts a pwm channel-number and a pwm chip-number as integer
             self.path = PWM_PATH % chip
@@ -34,6 +46,8 @@ class OnionPwm:
             self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
             if os.path.isdir(self.channelPath):
                 raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
+                # Not using a context manager and not calling release() may also cause this
+                # If this is the case, use onionPwm.forceRelease( channel , chip ) to release the channel
             self.channelNumber = channel   # Necessary for export/unexport
             self.periodFile = self.channelPath + '/' + PWM_CHANNEL_PERIOD_FILE
             self.cycleFile = self.channelPath + '/' + PWM_CHANNEL_DUTY_CYCLE_FILE
