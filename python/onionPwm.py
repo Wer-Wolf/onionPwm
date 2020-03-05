@@ -24,41 +24,48 @@ __maintainer__ = 'Wer-Wolf'
 # Before using this library, make sure to enable the corresponding PWM pins
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
 
-def forceRelease(channel, chip = 0): # Accepts a pwm channel-number and a pwm chip-number as integer
-    path = PWM_PATH % chip
-    if not os.path.isdir(path):
-        raise ValueError('Chip unknown')
-    with open(path + '/' + PWM_CHANNELS_FILE, 'r') as fd:
-        maxChannels = int(fd.read())
-    if (maxChannels() - 1) < channel:
-        raise ValueError('Channel unknown') # Channel exceeds max. channel number
-    with open(path + '/' + PWM_UNEXPORT_FILE, 'w') as fd:
-        fd.write(str(channel))
-    
+def toNsec(inHz):
+    if inHz <= 0:
+        raise ValueError('frequency is zero or negative')
+    inNsec = int((1 / inHz) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
+    # Rounding is necessary since float numbers are not supported
+    if inNsec == 0:
+        raise ValueError('Frequency too low')
+    return inNsec
+
+def toHz(inNsec):
+    if inNsec != 0:  # To avoid division exception
+        inHz = 1 / (inNsec / 1e+9)  # Frequency in Hz
+    else:
+        inHz = 0
+    return inHz
 
 class OnionPwm:
-    def __init__(self, channel, chip = 0):    # Accepts a pwm channel-number and a pwm chip-number as integer
+    def __init__(self, channel, chip = 0, force = False):    # Accepts a PWM channel-number and PWM chip-number as integer
             self.path = PWM_PATH % chip
             if not os.path.isdir(self.path):
                 raise ValueError('Chip unknown')
             if (self.getMaxChannels() - 1) < channel:
                 raise ValueError('Channel unknown') # Channel exceeds max. channel number
             self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
-            if os.path.isdir(self.channelPath):
-                raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
-                # Not using a context manager and not calling release() may also cause this
-                # If this is the case, use onionPwm.forceRelease( channel , chip ) to release the channel
             self.channelNumber = channel   # Necessary for export/unexport
+            if os.path.isdir(self.channelPath):
+                if force == False:  # Only use force = True if the corresponding PWM channel is not in use
+                    raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
+                    # Not using a context manager and not calling release() may also cause this
+                    # If this is the case, use force = True to release the channel
+            else:
+                self._exportChannel()   # Do release() or use a context manager!
             self.periodFile = self.channelPath + '/' + PWM_CHANNEL_PERIOD_FILE
             self.cycleFile = self.channelPath + '/' + PWM_CHANNEL_DUTY_CYCLE_FILE
             self.enableFile = self.channelPath + '/' + PWM_CHANNEL_ENABLE_FILE
-            self._exportChannel()   # Do release() or use a context manager!
 
     def __enter__(self):
-            return self
+        return self
 
     def __exit__(self, exceptionType, exceptionValue, traceback):
-            self._unexportChannel()
+        self._unexportChannel()
+        return False
 
     def _exportChannel(self):
         with open(self.path + '/' + PWM_EXPORT_FILE, 'w') as fd:
@@ -73,53 +80,58 @@ class OnionPwm:
             maxChannels = int(fd.read())
         return maxChannels
 
-    def setFrequency(self, frequency):  # Frequency in Hz
-        if frequency <= 0:
-            raise ValueError('frequency is zero or negative')
-        channelPeriod = int((1 / frequency) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
-        # Rounding is necessary since point numbers are not supported
-        if channelPeriod == 0:
-            raise ValueError('Frequency too low')
+    def setPeriod(self, period):
+        if period <= 0:
+            raise ValueError('Invalid value for period')
+        with open(self.periodFile, 'w') as fd:
+            fd.write(str(period))
+
+    def getPeriod(self):
         with open(self.periodFile, 'r') as fd:
-            currentPeriod = int(fd.read())
+            period = int(fd.read())
+        return period
+
+    def setCycle(self, cycle):
+        if cycle < 0:
+            raise ValueError('Duty cycle is negative')
+        with open(self.cycleFile, 'w') as fd:
+            fd.write(str(cycle))
+
+    def getCycle(self):
+        with open(self.cycleFile, 'r') as fd:
+            cycle = int(fd.read())
+        return cycle
+
+    def setFrequency(self, frequency):  # Frequency in Hz
+        channelPeriod = toNsec(frequency)
+        currentPeriod = self.getPeriod()
         if currentPeriod != 0:  # Not first access after reset
             with open(self.cycleFile, 'r+') as fd:
                 currentCycle = int(fd.read())
                 fd.write('0')   # To avoid OsError later due duty_cycle > period
             newCycle = int((channelPeriod / currentPeriod) * currentCycle)  # Necessary to adjust duty cycle to new period
-            with open(self.periodFile, 'w') as fd:
-                fd.write(str(channelPeriod))
-            with open(self.cycleFile, 'w') as fd:
-                fd.write(str(newCycle))
+            self.setPeriod(channelPeriod)
+            self.setCycle(newCycle)
         else:   # Do not adjust duty_cycle
-            with open(self.periodFile, 'w') as fd:
-                fd.write(str(channelPeriod))
+            self.setPeriod(channelPeriod)
 
     def getFrequency(self): # Result may slightly vary from the value set with setFrequency() due to rounding
-        with open(self.periodFile, 'r') as fd:
-            channelPeriod = int(fd.read())
-        if channelPeriod != 0:  # Period set
-            frequency = 1 / (channelPeriod / 1e+9)  # Frequency in Hz
-        else:
-            frequency = 0
+        channelPeriod = self.getPeriod()
+        frequency = toHz(channelPeriod)
         return frequency
 
     def setDutyCycle(self, dutyCycle):  # Value between 0 and 100 as float (75.5 -> 75.5 %)
         if dutyCycle > 100 or dutyCycle < 0:
             raise ValueError('dutyCycle exceeds value range')
-        with open(self.periodFile, 'r') as fd:
-            channelPeriod = int(fd.read())  # Read period first
+        channelPeriod = self.getPeriod()
         if channelPeriod != 0:   # Period set
             channelCycle = int(channelPeriod * (dutyCycle / 100))    # Duty cyle in nanoseconds, rounding is necessary
-            with open(self.cycleFile, 'w') as fd:
-                fd.write(str(channelCycle))
+            self.setCycle(channelCycle)
         # Else the new duty cycle whould equal 0
 
     def getDutyCycle(self):
-        with open(self.periodFile, 'r') as fd:
-            channelPeriod = int(fd.read())
-        with open(self.cycleFile, 'r') as fd:
-            channelCycle = int(fd.read())
+        channelPeriod = self.getPeriod()
+        channelCycle = self.getCycle()
         if channelPeriod != 0:  # Period set
             dutyCycle = (channelCycle / channelPeriod) * 100    # Result may slight vary from the value set with setDutyCycle() due to rounding
         else:
