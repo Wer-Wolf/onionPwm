@@ -141,7 +141,7 @@ class OnionPwm:
     def getStatus(self):
         with open(self.enableFile, 'r') as fd:
             status = fd.read()
-        if status == '1':
+        if status.strip() == '1':
             return 'enabled'
         else:
             return 'disabled'
