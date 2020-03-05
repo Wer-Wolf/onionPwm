@@ -20,7 +20,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ## **Usage:**
 
-### Initialize a PWM channel:**
+### Initialize a PWM channel: ###
 
 ```channel = onionPwm.OnionPwm( channel , chip = 0 , force = False)```
 
@@ -32,7 +32,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * When not using a context manager, call ```release()``` at the end to release the PWM channel 
 
-### Change the frequency of a PWM channel:**
+### Change the frequency of a PWM channel: ###
 
 ```channel.setFrequency( frequency in Hz )```
 
@@ -58,7 +58,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * Similar to ```getFrequency()```, but instead returns values in ns
 
-### Change the duty cycle of a PWM channel:**
+### Change the duty cycle of a PWM channel: ###
 
 ```channel.setDutyCycle( dutyCycle in percent )```
 
@@ -80,7 +80,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ***The result may slightly vary from the value set with setDutyCycle() due to rounding***
 
-### Enable/disable a PWM channel:**
+### Enable/disable a PWM channel: ###
 
 ```channel.enable()```
 
