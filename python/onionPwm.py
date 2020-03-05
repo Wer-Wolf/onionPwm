@@ -42,23 +42,23 @@ def toHz(inNsec):
 
 class OnionPwm:
     def __init__(self, channel, chip = 0, force = False):    # Accepts a PWM channel-number and PWM chip-number as integer
-            self.path = PWM_PATH % chip
-            if not os.path.isdir(self.path):
-                raise ValueError('Chip unknown')
-            if (self.getMaxChannels() - 1) < channel:
-                raise ValueError('Channel unknown') # Channel exceeds max. channel number
-            self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
-            self.channelNumber = channel   # Necessary for export/unexport
-            if os.path.isdir(self.channelPath):
-                if force == False:  # Only use force = True if the corresponding PWM channel is not in use
-                    raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
-                    # Not using a context manager and not calling release() may also cause this
-                    # If this is the case, use force = True to release the channel
-            else:
-                self._exportChannel()   # Do release() or use a context manager!
-            self.periodFile = self.channelPath + '/' + PWM_CHANNEL_PERIOD_FILE
-            self.cycleFile = self.channelPath + '/' + PWM_CHANNEL_DUTY_CYCLE_FILE
-            self.enableFile = self.channelPath + '/' + PWM_CHANNEL_ENABLE_FILE
+        self.path = PWM_PATH % chip
+        if not os.path.isdir(self.path):
+            raise ValueError('Chip unknown')
+        if (self.getMaxChannels() - 1) < channel:
+            raise ValueError('Channel unknown') # Channel exceeds max. channel number
+        self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
+        self.channelNumber = channel   # Necessary for export/unexport
+        if os.path.isdir(self.channelPath):
+            if force == False:  # Only use force = True if the corresponding PWM channel is not in use
+                raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
+                # Not using a context manager and not calling release() may also cause this
+                # If this is the case, use force = True to release the channel
+        else:
+            self._exportChannel()   # Do release() or use a context manager!
+        self.periodFile = self.channelPath + '/' + PWM_CHANNEL_PERIOD_FILE
+        self.cycleFile = self.channelPath + '/' + PWM_CHANNEL_DUTY_CYCLE_FILE
+        self.enableFile = self.channelPath + '/' + PWM_CHANNEL_ENABLE_FILE
 
     def __enter__(self):
         return self
