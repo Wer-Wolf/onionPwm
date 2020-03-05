@@ -147,6 +147,8 @@ class OnionPwm:
             return 'disabled'
 
     def enable(self):
+        if self.getPeriod() == 0:
+            raise RuntimeError('No frequency set')
         if self.getStatus() != 'enabled':
             with open(self.enableFile, 'w') as fd:
                 fd.write('1')
