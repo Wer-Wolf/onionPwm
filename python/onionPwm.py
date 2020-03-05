@@ -17,7 +17,7 @@ PWM_CHANNEL_PERIOD_FILE = 'period'  # The time in nanoseconds of the entire PWM 
 # Write normal or inversed to control whether the asserted portion of the PWM signal is a logical high vs. a local low (not supported)
 #PWM_CHANNEL_POLARITY_FILE = 'polarity'
 
-__version__ = '1.1'
+__version__ = '1.2'
 __author__ = 'Wer-Wolf'
 __maintainer__ = 'Wer-Wolf'
 
