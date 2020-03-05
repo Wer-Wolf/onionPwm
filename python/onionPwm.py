@@ -138,13 +138,23 @@ class OnionPwm:
             dutyCycle = 0
         return dutyCycle
 
+    def getStatus(self):
+        with open(self.enableFile, 'r') as fd:
+            status = fd.read()
+        if status == '1':
+            return 'enabled'
+        else:
+            return 'disabled'
+
     def enable(self):
-        with open(self.enableFile, 'w') as fd:
-            fd.write('1')
+        if self.getStatus() != 'enabled':
+            with open(self.enableFile, 'w') as fd:
+                fd.write('1')
 
     def disable(self):
-        with open(self.enableFile, 'w') as fd:
-            fd.write('0')
+        if self.getStatus() != 'disabled':
+            with open(self.enableFile, 'w') as fd:
+                fd.write('0')
     
     def release(self):  # Dont use with a context manager!
         self._unexportChannel()
