@@ -54,6 +54,10 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * If ```period``` is zero or negative, you will get ```ValueError('Invalid value for period')```
 
+* When ```period``` is smaller than the current channel duty cycle, you will get ```OSError: [Errno 22] Invalid argument```
+
+***Please use setFrequency() instead of setPeriod() for normal operation***
+
 ```channel.getPeriod()``` --> Period in ns
 
 * Similar to ```getFrequency()```, but instead returns values in ns
@@ -74,6 +78,10 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * When ```cycle``` is negative, you will get ```ValueError('Duty cycle is negative')```
 
+* When ```cycle``` is greater than the current channel period, you will get ```OSError: [Errno 22] Invalid argument```
+
+***Please use setDutyCycle() instead of setCycle() for normal operation***
+
 ```channel.getCycle()``` --> duty cycle in ns
 
 * Similar to ```getDutyCycle()```, but instead returns values in ns
@@ -84,11 +92,11 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel.enable()```
 
-* Please do ```setFrequency()``` before enabling a PWM channel, else you will get ```OSError: [Errno 22] Invalid argument```
-
 ```channel.disable()```
 
-* Please do ```enable()``` before disabling a PWM channel, else you will get ```OSError: [Errno 22] Invalid argument```
+* When the corresponding PWM channel is already enabled/disabled, this methods wont have any function
+
+```getStatus()``` --> 'enabled' or 'disabled'
 
 ### Hint: ###
 
