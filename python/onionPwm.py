@@ -17,7 +17,7 @@ PWM_CHANNEL_PERIOD_FILE = 'period'  # The time in nanoseconds of the entire PWM 
 # Write normal or inversed to control whether the asserted portion of the PWM signal is a logical high vs. a local low (not supported)
 #PWM_CHANNEL_POLARITY_FILE = 'polarity'
 
-__version__ = '1.2'
+__version__ = '1.3'
 __author__ = 'Wer-Wolf'
 __maintainer__ = 'Wer-Wolf'
 
@@ -50,10 +50,10 @@ class OnionPwm:
         self.channelPath = self.path + '/' + PWM_CHANNEL_PATH % channel
         self.channelNumber = channel   # Necessary for export/unexport
         if os.path.isdir(self.channelPath):
-            if force == False:  # Only use force = True if the corresponding PWM channel is not in use
+            if force == False:  # Only use force = True if the corresponding PWM channel is not in use!
                 raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
                 # Not using a context manager and not calling release() may also cause this
-                # If this is the case, use force = True to release the channel
+                # If this is the case, use force = True to force release the channel
         else:
             self._exportChannel()   # Do release() or use a context manager!
         self.periodFile = self.channelPath + '/' + PWM_CHANNEL_PERIOD_FILE
