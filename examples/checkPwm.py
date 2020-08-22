@@ -1,4 +1,4 @@
-import onionPwm as pwm
+from onion_pwm import onionPwm as pwm
 
 # Dont forget enabling the pwm0 pin!
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
