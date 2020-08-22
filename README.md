@@ -106,7 +106,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ## **Supports:**
 
-* Python 3
+* Python 3.5+
 
 ## **License:**
 This project is licensed under the LGPL License - see the [LICENSE](LICENSE) file for details
