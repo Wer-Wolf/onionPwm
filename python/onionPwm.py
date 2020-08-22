@@ -25,7 +25,7 @@ __maintainer__ = 'Wer-Wolf'
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
 
 
-def toNsec(inHz: Union[int, float]) -> int:
+def toNsec(inHz: float) -> int:
     if inHz <= 0:
         raise ValueError('frequency is zero or negative')
     inNsec = int((1 / inHz) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
@@ -35,7 +35,7 @@ def toNsec(inHz: Union[int, float]) -> int:
     return inNsec
 
 
-def toHz(inNsec: Union[int, float]) -> float:
+def toHz(inNsec: float) -> float:
     if inNsec != 0:  # To avoid division exception
         inHz = 1 / (inNsec / 1e+9)  # Frequency in Hz
     else:
@@ -44,7 +44,7 @@ def toHz(inNsec: Union[int, float]) -> float:
 
 
 class OnionPwm:
-    def __init__(self, channel: int, chip=0: int, force=False: bool) -> None:
+    def __init__(self, channel: int, chip: int = 0, force: bool = False) -> None:
         self.path = PWM_PATH % chip
         if not os.path.isdir(self.path):
             raise ValueError('Chip unknown')
@@ -105,7 +105,7 @@ class OnionPwm:
             cycle = int(fd.read())
         return cycle
 
-    def setFrequency(self, frequency: Union[int, float]):  # Frequency in Hz
+    def setFrequency(self, frequency: float):  # Frequency in Hz
         channelPeriod = toNsec(frequency)
         currentPeriod = self.getPeriod()
         if currentPeriod != 0:  # Not first access after reset
