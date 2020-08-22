@@ -17,10 +17,6 @@ PWM_CHANNEL_PERIOD_FILE = 'period'  # The time in nanoseconds of the entire PWM 
 # Write normal or inversed to control whether the asserted portion of the PWM signal is a logical high vs. a local low (not supported)
 # PWM_CHANNEL_POLARITY_FILE = 'polarity'
 
-__version__ = '1.3'
-__author__ = 'Wer-Wolf'
-__maintainer__ = 'Wer-Wolf'
-
 # Before using this library, make sure to enable the corresponding PWM pins
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
 
