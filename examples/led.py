@@ -1,4 +1,4 @@
-from onion_pwm import onionPwm as pwm
+import onionPwm as pwm
 import time
 
 # Dont forget enabling the pwm0 pin!
