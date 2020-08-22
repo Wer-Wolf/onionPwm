@@ -33,8 +33,8 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
     ],
     keywords='development',  # Optional
-    # package_dir={'': 'src'},  # Optional
-    packages=find_packages(),  # Required
+    package_dir={'': 'src'},  # Optional
+    py_modules=["onionPwm"],  # Required
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
     python_requires='>=3.5, <4',
     # https://packaging.python.org/en/latest/requirements.html
