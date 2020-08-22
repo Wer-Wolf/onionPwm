@@ -38,7 +38,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * Negative values or the value 0 for ```frequency``` will raise ```ValueError('frequency needs to be greater than 0')```
 
-* Values for ```frequency``` which are too small will raise ```ValueError('Frequency too low')```
+* Values for ```frequency``` which are too small will raise ```ValueError('Frequency too high')```
 
 * If the choosen frequency is not supported by the PWM chip, you will get ```Permission Error: [Errno 1] Operation not permitted```
 
