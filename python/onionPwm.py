@@ -31,7 +31,7 @@ def toNsec(inHz: Union[int, float]) -> int:
     inNsec = int((1 / inHz) * 1e+9)  # Period in nanoseconds (1000000000ns = 1s)
     # Rounding is necessary since float numbers are not supported
     if inNsec == 0:
-        raise ValueError('Frequency too low')
+        raise ValueError('Frequency too high')
     return inNsec
 
 
