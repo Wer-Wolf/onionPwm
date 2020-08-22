@@ -4,6 +4,8 @@
 
 ## **Description:**
 
+```from onion_pwm import onionPwm```
+
 Since Omega firmware build 195, the Omega2 family supports up to 4 oboard PWM channels through the linux /sys interface.
 However, unlike the PWM Expansion Board, there was no Python 3 compatible library for interfacing with these channels.
 The onionPwm library does fix this problem by providing easy access to the PWM channels.
