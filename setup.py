@@ -13,7 +13,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='onionPwm',  # Required
     version='2.0',  # Required
-    description='PWM-access on Onion Omega2',  # Optional
+    description='Python 3 library for interfacing with the onboard PWM of the Omega2',  # Optional
     long_description=long_description,  # Optional
     long_description_content_type='text/markdown',  # Optional
     url='https://github.com/Wer-Wolf/onionPwm',  # Optional
