@@ -22,13 +22,13 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ### Initialize a PWM channel: ###
 
-```channel = onionPwm.OnionPwm( channel , chip = 0 , force = False)```
+```channel = onionPwm.OnionPwm( channel , chip=0 , force=False )```
 
 * If the PWM channel specified with ```channel``` does not exist, you will get ```ValueError('Channel unknown')```
 
 * If the PWM chip specified with ```chip``` does not exist, you will get ```ValueError('Chip unknown')```
 
-* ```force = True``` ignores if the corresponding PWM chnnel is busy. Good if the previeous user forgot to call release(), but may lead to random crashes if the channel is still in use.
+* ```force = True``` ignores if the corresponding PWM chnnel is busy. Useful if the previeous user forgot to call release(), but may lead to random crashes if the channel is still in use.
 
 * When not using a context manager, call ```release()``` at the end to release the PWM channel 
 
@@ -38,7 +38,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * Negative values or the value 0 for ```frequency``` will raise ```ValueError('frequency needs to be greater than 0')```
 
-* Values for ```frequency``` which are too small will raise ```ValueError('Frequency too high')```
+* Values for ```frequency``` which are too high will raise ```ValueError('Frequency too high')```
 
 * If the choosen frequency is not supported by the PWM chip, you will get ```Permission Error: [Errno 1] Operation not permitted```
 
