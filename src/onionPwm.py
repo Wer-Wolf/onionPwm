@@ -20,7 +20,7 @@ PWM_CHANNEL_PERIOD_FILE = 'period'  # The time in nanoseconds of the entire PWM 
 # Before using this library, make sure to enable the corresponding PWM pins
 # (docs.onion.io/omega2-docs/generating-pwm-signals.html -> Enabling PWM Pins)
 
-__version__ = '1.3'
+__version__ = '2.0'
 __author__ = 'Wer-Wolf'
 __maintainer__ = 'Wer-Wolf'
 
