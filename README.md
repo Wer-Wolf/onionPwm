@@ -36,7 +36,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ### Change the frequency of a PWM channel: ###
 
-```channel.setFrequency( frequency in Hz )```
+```channel.set_frequency( frequency in Hz )```
 
 * Negative values or the value 0 for ```frequency``` will raise ```ValueError('frequency needs to be greater than 0')```
 
@@ -44,7 +44,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 * If the choosen frequency is not supported by the PWM chip, you will get ```Permission Error: [Errno 1] Operation not permitted```
 
-```channel.getFrequency()``` --> frequency in Hz
+```channel.get_frequency()``` --> frequency in Hz
 
 ***The result may slightly vary from the value set with setFrequency() due to rounding***
 
@@ -52,7 +52,7 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel.setPeriod( period in ns )```
 
-* Similar to ```setFrequency()```, but instead accepts values in ns
+* Similar to ```set_frequency()```, but instead accepts values in ns
 
 * If ```period``` is zero or negative, you will get ```ValueError('Invalid value for period')```
 
@@ -60,23 +60,22 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ***Please use setFrequency() instead of setPeriod() for normal operation***
 
-```channel.getPeriod()``` --> Period in ns
+```channel.get_period()``` --> Period in ns
 
-* Similar to ```getFrequency()```, but instead returns values in ns
+* Similar to ```get_frequency()```, but instead returns values in ns
 
 ### Change the duty cycle of a PWM channel: ###
 
-```channel.setDutyCycle( dutyCycle in percent )```
+```channel.set_duty_cycle( dutyCycle in percent )```
 
 * Values above 100 or under 0 for ```dutyCycle``` will raise ```ValueError('dutyCycle exceeds value range')```
 
-* When no frequency is set, ```setDutyCycle``` and ```getDutyCycle()``` will always set/report 0
-
-```channel.getDutyCycle()``` --> duty cycle in percend
+* When no frequency is set, ```set_cycle``` and ```get_duty_cycle()``` will always set/report
+```channel.get_duty_cycle()``` --> duty cycle in percend
 
 ```channel.setCycle( cycle in ns )```
 
-* Similar to ```setDutyCycle()```, but instead accepts values in ns
+* Similar to ```set_duty_cycle()```, but instead accepts values in ns
 
 * When ```cycle``` is negative, you will get ```ValueError('Duty cycle is negative')```
 
@@ -84,9 +83,9 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ***Please use setDutyCycle() instead of setCycle() for normal operation***
 
-```channel.getCycle()``` --> duty cycle in ns
+```channel.get_cycle()``` --> duty cycle in ns
 
-* Similar to ```getDutyCycle()```, but instead returns values in ns
+* Similar to ```get_duty_cycle()```, but instead returns values in ns
 
 ***The result may slightly vary from the value set with setDutyCycle() due to rounding***
 
@@ -96,9 +95,9 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel.disable()```
 
-* When the corresponding PWM channel is already enabled/disabled, this methods wont have any function
+* enable / disable the channel
 
-```getStatus()``` --> 'enabled' or 'disabled'
+```is_enabled()``` --> True or False
 
 ### Hint: ###
 
