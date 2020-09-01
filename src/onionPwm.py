@@ -1,4 +1,5 @@
-import os.path
+#!/usr/bin/python3
+from errno import EBUSY
 
 # Path definitions
 PWM_BASE_PATH = '/sys/class/pwm'
@@ -36,19 +37,17 @@ def toNsec(inHz: float) -> int:
 
 
 def toHz(inNsec: float) -> float:
-    if inNsec != 0:  # To avoid division exception
+    try:  # To avoid division exception
         inHz = 1 / (inNsec / 1e+9)  # Frequency in Hz
-    else:
+    except ZeroDivisionError:
         inHz = 0.0
     return inHz
 
 
-class OnionPwm:
+class OnionPwm:     # https://www.kernel.org/doc/Documentation/pwm.txt
     def __init__(self, channel: int, chip: int = 0, force: bool = False) -> None:
         self.channel_number = channel   # Necessary for export/unexport
         path = PWM_PATH % chip
-        if not os.path.isdir(path):
-            raise ValueError('Chip unknown')
         self.export_file = '/'.join((path, PWM_EXPORT_FILE))
         self.unexport_file = '/'.join((path, PWM_UNEXPORT_FILE))
         self.channels_file = '/'.join((path, PWM_CHANNELS_FILE))
@@ -56,14 +55,14 @@ class OnionPwm:
         self.period_file = '/'.join((channel_path, PWM_CHANNEL_PERIOD_FILE))
         self.cycle_file = '/'.join((channel_path, PWM_CHANNEL_DUTY_CYCLE_FILE))
         self.enable_file = '/'.join((channel_path, PWM_CHANNEL_ENABLE_FILE))
-        if (self.get_max_channels() - 1) < channel:
-            raise ValueError('Channel unknown')  # Channel exceeds max. channel number
-        if os.path.isdir(channel_path) and not force:  # Only use force = True if the corresponding PWM channel is not in use!
-            raise RuntimeError('Device busy')   # PWM channel is already exported (in use)
+        try:
+            self._exportChannel()
+        except OSError as err:
+            if err.errno == EBUSY and force:
+                pass    # PWM channel is already exported (in use) and we should ignore
+            raise   # do not force or something else happend -> dont hide exception
             # Not using a context manager and not calling release() may also cause this
             # If this is the case, use force = True to force release the channel
-        else:
-            self._exportChannel()   # Do release() or use a context manager!
 
     def __enter__(self):
         return self
@@ -95,8 +94,6 @@ class OnionPwm:
             return int(fd.read())
 
     def set_cycle(self, cycle: int) -> None:
-        if cycle < 0:
-            raise ValueError('Duty cycle is negative')
         with open(self.cycle_file, 'w') as fd:
             fd.write(str(cycle))
 
@@ -141,8 +138,6 @@ class OnionPwm:
             return fd.read().rstrip() == '1'
 
     def enable(self) -> None:
-        if self.get_period() == 0:
-            raise RuntimeError('No frequency set')
         with open(self.enable_file, 'w') as fd:
             fd.write('1')
 

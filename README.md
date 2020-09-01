@@ -26,21 +26,17 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel = onionPwm.OnionPwm( channel , chip=0 , force=False )```
 
-* If the PWM channel specified with ```channel``` does not exist, you will get ```ValueError('Channel unknown')```
+* If the PWM channel specified with ```channel``` does not exist, you will get ```OSError: [Errno 19] No such device```
 
-* If the PWM chip specified with ```chip``` does not exist, you will get ```ValueError('Chip unknown')```
+* If the PWM chip specified with ```chip``` does not exist, you will get ```FileNotFoundError```
 
-* ```force = True``` ignores if the corresponding PWM chnnel is busy. Useful if the previeous user forgot to call release(), but may lead to random crashes if the channel is still in use.
+* ```force = True``` ignores if the corresponding PWM chnnel is busy. Useful if the previous user forgot to call release(), but may lead to errors if the channel is still in use.
 
 * When not using a context manager, call ```release()``` at the end to release the PWM channel 
 
 ### Change the frequency of a PWM channel: ###
 
 ```channel.set_frequency( frequency in Hz )```
-
-* Negative values or the value 0 for ```frequency``` will raise ```ValueError('frequency needs to be greater than 0')```
-
-* Values for ```frequency``` which are too high will raise ```ValueError('Frequency too high')```
 
 * If the choosen frequency is not supported by the PWM chip, you will get ```Permission Error: [Errno 1] Operation not permitted```
 
@@ -50,11 +46,11 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ### Change the period of a PWM channel: ###
 
-```channel.setPeriod( period in ns )```
+```channel.set_period( period in ns )```
 
 * Similar to ```set_frequency()```, but instead accepts values in ns
 
-* If ```period``` is zero or negative, you will get ```ValueError('Invalid value for period')```
+* If ```period``` is zero or negative, you will get ```OSError: [Errno 22] Invalid argument```
 
 * When ```period``` is smaller than the current channel duty cycle, you will get ```OSError: [Errno 22] Invalid argument```
 
@@ -68,16 +64,14 @@ The onionPwm library does fix this problem by providing easy access to the PWM c
 
 ```channel.set_duty_cycle( dutyCycle in percent )```
 
-* Values above 100 or under 0 for ```dutyCycle``` will raise ```ValueError('dutyCycle exceeds value range')```
-
 * When no frequency is set, ```set_cycle``` and ```get_duty_cycle()``` will always set/report
-```channel.get_duty_cycle()``` --> duty cycle in percend
+```channel.get_duty_cycle()``` --> duty cycle in percent
 
-```channel.setCycle( cycle in ns )```
+```channel.set_cycle( cycle in ns )```
 
 * Similar to ```set_duty_cycle()```, but instead accepts values in ns
 
-* When ```cycle``` is negative, you will get ```ValueError('Duty cycle is negative')```
+* When ```cycle``` is negative, you will get ```OSError: [Errno 22] Invalid argument```
 
 * When ```cycle``` is greater than the current channel period, you will get ```OSError: [Errno 22] Invalid argument```
 
