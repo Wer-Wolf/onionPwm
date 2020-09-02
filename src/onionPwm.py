@@ -58,9 +58,8 @@ class OnionPwm:     # https://www.kernel.org/doc/Documentation/pwm.txt
         try:
             self._exportChannel()
         except OSError as err:
-            if err.errno == EBUSY and force:
-                pass    # PWM channel is already exported (in use) and we should ignore
-            raise   # do not force or something else happend -> dont hide exception
+            if not (err.errno == EBUSY and force):  # hide exception if device is busy and force == True
+                raise
             # Not using a context manager and not calling release() may also cause this
             # If this is the case, use force = True to force release the channel
 
