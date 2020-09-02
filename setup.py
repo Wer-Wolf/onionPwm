@@ -12,7 +12,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='onionPwm',  # Required
-    version='2.0',  # Required
+    version='2.1',  # Required
     description='Python 3 library for interfacing with the onboard PWM of the Omega2',  # Optional
     long_description=long_description,  # Optional
     long_description_content_type='text/markdown',  # Optional
